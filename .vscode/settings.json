@@ -1,0 +1,36 @@
+{
+	// Type d'indentation par défaut.
+	"editor.insertSpaces": false,
+
+	// Fichier exclu de l'affichage.
+	"files.exclude": {
+		"**/__pycache__": true
+	},
+
+	"cSpell.language": "en, fr",
+	"cSpell.caseSensitive": false,
+
+	// Mots ajouter au dictionnaire.
+	"cSpell.words": [
+		"dotmap",
+		"sanic",
+		"Sanic",
+		"sqlite",
+		"tinyshare",
+		"venv",
+		"virtualenvs"
+	],
+
+	// Paramètre du "BasedPyright" extensions (serveur de language python).
+	"basedpyright.analysis.diagnosticSeverityOverrides": {
+		"reportIncompatibleVariableOverride": "none",
+		"reportImplicitOverride": "none",
+
+		"reportMissingTypeStubs": "none",
+
+		"reportUnknownMemberType": "none",
+		"reportUnknownVariableType": "none",
+		"reportUnknownParameterType": "none",
+		"reportUnusedCallResult": "information",
+	},
+}
