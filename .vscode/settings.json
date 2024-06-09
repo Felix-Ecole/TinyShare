@@ -4,7 +4,16 @@
 
 	// Fichier exclu de l'affichage.
 	"files.exclude": {
-		"**/__pycache__": true
+		"**/.git": true,
+		"**/.svn": true,
+		"**/.hg": true,
+		"**/CVS": true,
+		"**/.DS_Store": true,
+		"**/Thumbs.db": true,
+		"**/__pycache__": true,
+		"[!s]*/**": true,
+		"s[!r]*/**": true,
+		"sr[!c]*/**": true
 	},
 
 	"cSpell.language": "en, fr",
@@ -12,6 +21,7 @@
 
 	// Mots ajouter au dictionnaire.
 	"cSpell.words": [
+		"basedpyright",
 		"dotmap",
 		"sanic",
 		"Sanic",
@@ -24,13 +34,20 @@
 	// Paramètre du "BasedPyright" extensions (serveur de language python).
 	"basedpyright.analysis.diagnosticSeverityOverrides": {
 		"reportIncompatibleVariableOverride": "none",
+		"reportSelfClsParameterName": "information",
 		"reportImplicitOverride": "none",
+		"reportAny": "none",
 
+		"reportMissingParameterType": "information",
 		"reportMissingTypeStubs": "none",
 
+		"reportUnknownLambdaType": "none",
 		"reportUnknownMemberType": "none",
 		"reportUnknownVariableType": "none",
+		"reportUnknownArgumentType": "none",
 		"reportUnknownParameterType": "none",
+
+		"reportUnusedImport": "information",
 		"reportUnusedCallResult": "information",
 	},
 }
