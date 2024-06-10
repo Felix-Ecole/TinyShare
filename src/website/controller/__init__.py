@@ -6,11 +6,11 @@ Les petits scripts ce trouveront ici et les gros devront-être dans des modules 
 
 # ----------------------------------------------------------------------------------------------------
 from pathlib import Path
+from typing import Any
 
+from jinja2 import Environment, FileSystemLoader
 from sanic import Request, response
 from sanic.exceptions import NotFound
-from typing_extensions import Any, Mapping
-from wheezy.template import CodeExtension, CoreExtension, Engine, FileLoader
 # ----------------------------------------------------------------------------------------------------
 
 
@@ -20,9 +20,11 @@ from wheezy.template import CodeExtension, CoreExtension, Engine, FileLoader
 VUE_PATH = Path.cwd().joinpath("src/website/vue")
 
 # Fonction pour récupérer et formater un template avec des informations.
-def template(rel_filepath: str, content: Mapping[str, Any]|None = None)-> str:
-	VUE = Engine(FileLoader([str(VUE_PATH)]), [CoreExtension(), CodeExtension()])
-	return VUE.get_template(rel_filepath).render((content or {}))
+def template(rel_filepath: str, content: dict[str, Any]|None = None, autoescape:bool = False)-> str:
+	return Environment(
+		loader=FileSystemLoader(str(VUE_PATH)),
+		trim_blocks=True, autoescape=autoescape
+	).get_template(rel_filepath).render((content or {}))
 # ----------------------------------------------------------------------------------------------------
 
 

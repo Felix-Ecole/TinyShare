@@ -1,0 +1,17 @@
+{
+	"recommendations": [
+		"ms-python.python",
+		"detachhead.basedpyright",
+		
+		"streetsidesoftware.code-spell-checker",
+		"streetsidesoftware.code-spell-checker-french",
+		
+		"rhalaly.scope-to-this",
+		"PKief.material-icon-theme",
+		"bierner.markdown-preview-github-styles",
+		
+		"qwtel.sqlite-viewer",
+		"esbenp.prettier-vscode",
+		"thebarkman.vscode-djaneiro",
+	]
+}

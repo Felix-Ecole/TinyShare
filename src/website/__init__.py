@@ -27,9 +27,11 @@ ERROR = ErrorHandler()
 # ----------------------------------------------------------------------------------------------------
 # Ajout des routes : app.add_route(function, path, ...)
 # ----------------------------------------------------------------------------------------------------
-_ = URL.add_route(c.home, "/")
+_ = [
+	URL.add_route(c.home, "/"),
 
-URL.static("/static/", c.VUE_PATH.joinpath("static"))
+	URL.static("/static/", c.VUE_PATH.joinpath("static")),
 
-ERROR.add(NotFound, c.notfound)
+	ERROR.add(NotFound, c.notfound),
+]
 # ----------------------------------------------------------------------------------------------------

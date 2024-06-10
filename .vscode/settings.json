@@ -16,7 +16,7 @@
 		"sr[!c]*/**": true
 	},
 
-	"cSpell.language": "en, fr",
+	"cSpell.language": "en-US, fr-FR",
 	"cSpell.caseSensitive": false,
 
 	// Mots ajouter au dictionnaire.
@@ -31,23 +31,28 @@
 		"virtualenvs"
 	],
 
-	// Paramètre du "BasedPyright" extensions (serveur de language python).
+	// --------------------------------------------------------------------------------
+	// Paramètre de l'extension "BasedPyright" :
+	// --------------------------------------------------------------------------------
+	"basedpyright.analysis.diagnosticMode": "workspace",
+	"basedpyright.analysis.typeCheckingMode": "standard",
+
+	// https://github.com/detachhead/basedpyright/blob/main/docs/configuration.md
 	"basedpyright.analysis.diagnosticSeverityOverrides": {
-		"reportIncompatibleVariableOverride": "none",
-		"reportSelfClsParameterName": "information",
-		"reportImplicitOverride": "none",
-		"reportAny": "none",
 
-		"reportMissingParameterType": "information",
-		"reportMissingTypeStubs": "none",
-
-		"reportUnknownLambdaType": "none",
-		"reportUnknownMemberType": "none",
-		"reportUnknownVariableType": "none",
-		"reportUnknownArgumentType": "none",
-		"reportUnknownParameterType": "none",
-
-		"reportUnusedImport": "information",
+		// OK FOR ONLY STANDARD
+		"reportUnusedExpression": "error",
+		"reportMissingParameterType": "error",
+		"reportSelfClsParameterName": "error",
+		
+		// OK ALL
+		"reportUnreachable": "error",
+		"reportUnusedClass": "warning",
+		"reportUnusedImport": "warning",
+		"reportUnusedVariable": "warning",
+		"reportUnusedFunction": "warning",
+		"reportGeneralTypeIssues": "none",
 		"reportUnusedCallResult": "information",
 	},
+	// --------------------------------------------------------------------------------
 }
