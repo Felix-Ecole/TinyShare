@@ -10,10 +10,7 @@
 		"**/CVS": true,
 		"**/.DS_Store": true,
 		"**/Thumbs.db": true,
-		"**/__pycache__": true,
-		"[!s]*/**": true,
-		"s[!r]*/**": true,
-		"sr[!c]*/**": true
+		"**/__pycache__": true
 	},
 
 	"cSpell.language": "en-US, fr-FR",
