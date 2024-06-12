@@ -10,10 +10,12 @@ https://sanic.dev/en/guide/best-practices/exceptions.html#handling
 
 # ----------------------------------------------------------------------------------------------------
 from sanic import Blueprint
-from sanic.exceptions import NotFound
+from sanic.exceptions import SanicException
 from sanic.handlers import ErrorHandler
 
 from . import controller as c
+from .controller import panel as p
+from .controller import shared as s
 # from .controller import websocket_demo as WSD
 # ----------------------------------------------------------------------------------------------------
 
@@ -29,9 +31,19 @@ ERROR = ErrorHandler()
 # ----------------------------------------------------------------------------------------------------
 _ = [
 	URL.add_route(c.home, "/"),
+	URL.add_route(c.login, "/login"),
 
-	URL.static("/static/", c.VUE_PATH.joinpath("static")),
+	URL.add_route(p.admin, "/admin/"),
+	URL.add_route(p.client, "/panel/"),
 
-	ERROR.add(NotFound, c.notfound),
+	URL.add_route(s.shared, "/l/<ID:str>", name="link_shared"),
+	URL.add_route(s.shared, "/t/<ID:str>", name="text_shared"),
+	URL.add_route(s.shared, "/f/<ID:str>", name="file_shared"),
+	URL.add_route(s.shared, "/i/<ID:str>", name="imag_shared"),
+
+	URL.static("/static/", c.Render.VUE_PATH.joinpath("static")),
+
+	ERROR.add(OSError, c.error),
+	ERROR.add(SanicException, c.error),
 ]
 # ----------------------------------------------------------------------------------------------------

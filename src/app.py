@@ -1,8 +1,9 @@
 # ----------------------------------------------------------------------------------------------------
-from sanic.http.constants import HTTP
 from sanic import Sanic
+from sanic.http.constants import HTTP
 
-from website import URL, ERROR
+from website import ERROR, URL
+from website.controller import Render
 # ----------------------------------------------------------------------------------------------------
 
 
@@ -10,6 +11,10 @@ from website import URL, ERROR
 app = Sanic("TinyShare", error_handler=ERROR)
 app.blueprint(URL)
 app.error_handler = ERROR
+
+# Ajoute des fonctions et informations dans la portée du générateur des templates.
+Render.ENV.globals["url_for"] = lambda x, **y: app.url_for(f"url.{x}", **y)
+Render.ENV.globals["routes"] = app.router.routes
 
 
 # Si le module est exécuté,
