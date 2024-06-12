@@ -1,1 +1,12 @@
-Home
+{% extends 'static/html/base.html' %}
+
+{% block title %}Accueil{% endblock title %}
+
+{% block head %}
+{% endblock head %}
+
+{% block body %}
+	{% for val in routes %}
+		<a href="{{ val.path }}">{{ val.name.split('.')[2] }}</a><br>
+	{% endfor %}
+{% endblock body %}
