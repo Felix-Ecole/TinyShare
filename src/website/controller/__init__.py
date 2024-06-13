@@ -6,71 +6,107 @@ Les petits scripts ce trouveront ici et les gros devront-être dans des modules 
 
 # ----------------------------------------------------------------------------------------------------
 from pathlib import Path
+import traceback
 from typing import Any
 
 from jinja2 import Environment, FileSystemLoader
-from jinja2.exceptions import TemplateError
+from jinja2.exceptions import TemplateError, TemplateNotFound
 from sanic import Request, response
-from sanic.exceptions import SanicException, ServerError
 from sanic.log import logger
 # ----------------------------------------------------------------------------------------------------
 
 
 
 # ----------------------------------------------------------------------------------------------------
+# Moteur de rendu des pages HTML avec Jinja2.
+# ----------------------------------------------------------------------------------------------------
 class Render:
 	# Défini l'emplacement des fichiers du front-end.
 	VUE_PATH = Path.cwd().joinpath("src/website/vue")
 
-	# Défini la configuration du moteur de template.
+	# Défini la configuration du moteur de rendu.
 	ENV = Environment(
 		loader=FileSystemLoader(VUE_PATH),
-		trim_blocks=True, lstrip_blocks=True
+		trim_blocks=True, lstrip_blocks=True,
+		autoescape=True
 	)
 
 	@classmethod
-	def file(cls, rel_filepath: str, context: dict[str, Any] = {}, escape:bool = True):
-		return cls.__render(template=cls.ENV.get_template(rel_filepath), context=context, escape=escape)
-
-	@classmethod
-	def text(cls, text: str, context: dict[str, Any] = {}, escape:bool = True):
-		return cls.__render(template=cls.ENV.from_string(text), context=context, escape=escape)
-
-	@classmethod
-	def __render(cls, **kwargs: Any):
+	def content(cls, template: str|Path, ctx: dict[str, Any] = {}, escape:bool = True):
 		"""
-		Cette fonction formate un template avec des informations et, si besoins,
-		échappe ou non les caractères XML/HTML qui se trouverait dans le "context".
+			Cette fonction permet de transformer un fichier template `Jinja2` (version 3.0.x) en code HTML.
+
+			Les arguments obligatoire sont :
+			- `template` : correspond soit à du contenu, soit à un emplacement relatif du fichier à traité.
+
+			Les arguments optionnelle sont :
+			- `ctx` : permet de transmettre des informations au template par le biais d'une variable nommée `ctx`.
+			- `escape` permet d'échappe ou non les caractères XML/HTML qui se trouverait dans le `ctx`.
 		"""
 
-		try:
-			cls.ENV.autoescape = kwargs["escape"]
-			HTML = kwargs["template"].render(({"context": kwargs["context"]}))
-			cls.ENV.autoescape = False
-			return HTML
-		except TemplateError as e:
-			logger.exception(e); print("\n")
-			raise ServerError(f"jinja2.exceptions.{type(e).__name__}: {str(e)}")
+		# Si "template" est un "Path",
+		if type(template) == type(Path()):
+			# Alors, charge le modèle contenu dans le fichier.
+			data = cls.ENV.get_template(Path(template).as_posix())
+		else:
+			# Sinon, charge le modèle contenu dans la chaîne de texte.
+			data = cls.ENV.from_string(str(template))
+
+
+		# Active ou non l'échappement des caractères XML/HTML qui se trouverait
+		# dans le contexte avant de faire le rendu du template et d'enfin
+		# remettre l'état d'origine de l'échappement des caractères.
+		if not escape: cls.ENV.autoescape = False
+		HTML = data.render(({"ctx": ctx}))
+		if not escape: cls.ENV.autoescape = True
+
+
+		# Retourne le template générer.
+		return HTML
 # ----------------------------------------------------------------------------------------------------
 
 
 
+# ----------------------------------------------------------------------------------------------------
+# Petite page qui n'on pas besoins d'une grosse préparation.
+# ----------------------------------------------------------------------------------------------------
 async def home(request: Request):
-	return response.html(Render.file("index.html"))
-
-async def login(request: Request):
-	return response.html(Render.file("interface/login.html"))
+	return response.html(Render.content(Path("index.html")))
+# ----------------------------------------------------------------------------------------------------
 
 
 
-async def error(request: Request, exception: SanicException|OSError):
-	HTTP_CODE = 0
+async def error(request: Request, exception: Exception):
+	HTTP_CODE: int = getattr(exception, "status_code", 0)
 
-	if type(exception) == SanicException:
-		HTTP_CODE = exception.status_code
+	if type(exception) == OSError: HTTP_CODE = 404
+	if type(exception) == TypeError: HTTP_CODE = 500
+	if type(exception) == IsADirectoryError: HTTP_CODE = 403
 
-	if OSError in type(exception).__bases__:
-		if type(exception) == IsADirectoryError: HTTP_CODE = 403
+	def error_print(error: Exception, msg: str):
+		print("".rjust(120, "-"))
+		traceback.print_exc()
+		print("".rjust(120, "⬇"))
+		# print("".rjust(120, "-"))
+		logger.error(msg)
+		print("".rjust(120, "-"))
 
-	logger.error(f"{HTTP_CODE} -----> {str(exception)}")
-	return response.html(Render.file(f"static/html/error/{HTTP_CODE}.html"), HTTP_CODE)
+
+	try:
+		msg = f"{HTTP_CODE} -----> {str(exception)}"
+		if not HTTP_CODE: raise exception
+		error_print(exception, msg)
+		return response.html(
+			Render.content(Path(f"static/html/error/{HTTP_CODE}.html")), HTTP_CODE
+		)
+	except TemplateError as e:
+		msg = f"jinja2.exceptions.{type(e).__name__}: Message: {Render.VUE_PATH.joinpath(str(e))}"
+		if type(e) == TemplateNotFound: msg=msg.replace("message", "File Not Found at")
+		error_print(e, msg)
+
+		with open(Render.VUE_PATH.joinpath("static/html/error/500.html"), "r", encoding="UTF8") as f:
+			return response.html(f.read())
+	except Exception as e:
+		error_print(e, msg) # pyright: ignore
+		with open(Render.VUE_PATH.joinpath("static/html/error/500.html"), "r", encoding="UTF8") as f:
+			return response.html(f.read())

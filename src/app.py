@@ -21,7 +21,9 @@ Render.ENV.globals["routes"] = app.router.routes
 if __name__ == "__main__":
 
 	# Alors, exécute l'application avec différents paramètres.
-	app.run(host="localhost", port=5000, version=HTTP.VERSION_1)
+	# app.prepare("192.168.1.20", 5000)
+	app.prepare("localhost", 5000)
+	app.run(version=HTTP.VERSION_1, dev=False)
 
 
 
