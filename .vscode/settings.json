@@ -20,6 +20,7 @@
 	"cSpell.words": [
 		"basedpyright",
 		"dotmap",
+		"permissioned",
 		"sanic",
 		"Sanic",
 		"sqlite",
@@ -43,7 +44,6 @@
 		"reportSelfClsParameterName": "error",
 		
 		// OK ALL
-		"reportUnreachable": "error",
 		"reportUnusedClass": "warning",
 		"reportUnusedImport": "warning",
 		"reportUnusedVariable": "warning",

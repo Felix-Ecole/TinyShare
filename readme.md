@@ -84,3 +84,4 @@ Exécuté le scripts powershell ci-dessous pour une installation automatique (te
 - Mettre à jour les dépendances : `poetry update` (en accord avec les règles de version défini)
 - Liste des dépendances : `poetry show`
 - ... : `poetry lock`
+- Rechargement automatique : `nodemon .\src\app.py -e "*"` (incroyable mais vrai, ça fonctionne aussi avec python)
