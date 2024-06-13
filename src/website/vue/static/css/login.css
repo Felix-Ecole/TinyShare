@@ -1,0 +1,13 @@
+main {
+	display: flex; flex-direction: column;
+}
+
+form {
+	display: flex; flex-direction: column; justify-content: center;
+	height: 400px; width: 400px; margin: auto; padding: 30px;
+	border: 1px solid #C9CBCF; border-radius: 0.25rem;
+	text-align: center;
+}
+
+form input { margin-bottom: 20px; }
+form h2 { margin-bottom: 60px; }

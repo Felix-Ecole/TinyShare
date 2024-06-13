@@ -1,0 +1,33 @@
+/* ---------------------------------------------------------------------------------------------------- */
+/*                                        Stylisation par défaut                                        */
+/* ---------------------------------------------------------------------------------------------------- */
+* { margin: 0; padding: 0; color: #303236; font-family: "Segoe UI", "Roboto"; }
+
+body * { font-size: 16px; line-height: 24px; }
+
+h1, h2, h3, h4, h5, h6 { line-height: 1em; }
+h1 { font-size: 5em; }    h2 { font-size: 3.5em; }
+h3 { font-size: 2.5em; }  h4 { font-size: 1.75em; }
+h5 { font-size: 1.25em; } h6 { font-size: 0.85em; }
+
+a { display: inline-block; }
+
+button:hover, .btn:hover { background-color: #F2F2F3; }
+button:active, .btn:active { background-color: #E4E5E7; }
+button, .btn {
+	border: 1px solid #C9CBCF; border-radius: 0.5rem;
+	text-decoration: none; padding: 5px 10px;
+	background-color: white;
+}
+/* ---------------------------------------------------------------------------------------------------- */
+
+header {
+	justify-content: end; display: flex; align-items: center;
+	border-bottom: 1px solid #C9CBCF; height: 75px;
+}
+
+header a { margin-right: 20px; }
+
+main {
+	height: calc(100vh - 76px);
+}

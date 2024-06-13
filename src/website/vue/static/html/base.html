@@ -1,15 +1,23 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" data-bs-core="modern">
 	<head>
 		<title>{% block title %}{% endblock title %} - TinyShare</title>
 		<meta charset="UTF-8">
 
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<link rel="stylesheet" href="">
+		<link rel="stylesheet" href="/static/css/base.css">
 
-		{% block head %}{% endblock head %}
+		{% block head %}{% endblock %}
 	</head>
 	<body>
-		{% block body %}{% endblock body %}
+		<header>
+			{% block header %}{% endblock %}
+		</header>
+		<main>
+			{% block main %}{% endblock %}
+		</main>
+		<footer>
+			{% block footer %}{% endblock %}
+		</footer>
 	</body>
 </html>

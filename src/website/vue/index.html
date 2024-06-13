@@ -5,8 +5,13 @@
 {% block head %}
 {% endblock head %}
 
-{% block body %}
+{% block header %}
+	<a class="btn" href="{{ url_for('login' ) }}?inscription">Inscription</a>
+	<a class="btn" href="{{ url_for('login' ) }}">Connexion</a>
+{% endblock %}
+
+{% block main %}
 	{% for val in routes %}
-		<a href="{{ val.path }}">{{ val.name.split('.')[2] }}</a><br>
+	<a class="btn" href="{{ val.path }}">{{ val.name.split('.')[2] }}</a>
 	{% endfor %}
-{% endblock body %}
+{% endblock %}

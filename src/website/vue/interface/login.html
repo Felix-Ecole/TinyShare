@@ -3,7 +3,53 @@
 {% block title %}Connexion{% endblock title %}
 
 {% block head %}
+	<link rel="stylesheet" href="/static/css/login.css">
 {% endblock head %}
 
-{% block body %}
-{% endblock body %}
+{% block header %}
+	<a id="l_register" class="btn btn-secondary btn-lg" href="{{ url_for('login' ) }}?inscription">Inscription</a>
+	<a id="l_login" class="btn btn-secondary btn-lg" href="{{ url_for('login' ) }}">Connexion</a>
+	<a class="btn btn-secondary btn-lg" href="{{ url_for('home' ) }}">Accueil</a>
+{% endblock %}
+
+{% block main %}
+	<div style="flex:0.5"></div>
+
+	<section id="login" style="display: none;">
+		<form action="" method="POST">
+			<h2>Connexion</h2>
+			<input  tabindex="1" required type="text" name="pseudo" placeholder="Nom d'utilisateur">
+			<input  tabindex="1" required type="password" name="passwd" placeholder="Mot de passe">
+			<span style="user-select: none;">
+				<input tabindex="2" type="checkbox" name="keep" id="keep">
+				<label for="keep">Rester connecter</label>
+			</span>
+			<button tabindex="1">Connexion</button>
+		</form>
+	</section>
+
+	<section id="inscription" style="display: none;">
+		<form action="" method="POST">
+			<h2>Inscription</h2>
+			<input  tabindex="1" required type="text" name="pseudo" placeholder="Nom d'utilisateur">
+			<input  tabindex="1" required type="mail" name="mail" placeholder="Adresse mail">
+			<input  tabindex="1" required type="password" name="passwd1" placeholder="Mot de passe">
+			<input  tabindex="1" required type="password" name="passwd2" placeholder="Confirmation">
+			<button tabindex="1">Inscription</button>
+		</form>
+	</section>
+
+	<div style="flex:1"></div>
+{% endblock %}
+
+{% block footer %}
+	<script>
+		if (new URL(location).searchParams.get("inscription") == "") {
+			l_register.style.display = "none"
+			inscription.style.display = ""
+		} else {
+			l_login.style.display = "none"
+			login.style.display = ""
+		}
+	</script>
+{% endblock %}
