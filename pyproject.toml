@@ -12,6 +12,8 @@ sanic = "^23.12.1"
 tortoise-orm = "^0.21.3"
 dotmap = "^1.3.30"
 jinja2 = "^3.1.4"
+pyjwt = "^2.8.0"
+passlib = {extras = ["pbkdf2-sha256"], version = "^1.7.4"}
 
 
 [build-system]

@@ -7,10 +7,9 @@ from website.controller import Render
 # ----------------------------------------------------------------------------------------------------
 
 
-# Créer l'application et ajout les URL.
+# Créer l'application et ajout les URL ainsi que les erreurs.
 app = Sanic("TinyShare", error_handler=ERROR)
 app.blueprint(URL)
-app.error_handler = ERROR
 
 # Ajoute des fonctions et informations dans la portée du générateur des templates.
 Render.ENV.globals["url_for"] = lambda x, **y: app.url_for(f"url.{x}", **y)
@@ -21,7 +20,6 @@ Render.ENV.globals["routes"] = app.router.routes
 if __name__ == "__main__":
 
 	# Alors, exécute l'application avec différents paramètres.
-	# app.prepare("192.168.1.20", 5000)
 	app.prepare("localhost", 5000)
 	app.run(version=HTTP.VERSION_1, dev=False)
 

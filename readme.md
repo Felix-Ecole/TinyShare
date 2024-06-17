@@ -30,7 +30,7 @@ L’association « OutilsLibres » souhaitait mettre en place une plateforme en 
 - [GIT](https://git-scm.com) et [GIT Extension (optionnel)](https://github.com/gitextensions/gitextensions)
 - [VSCode](https://code.visualstudio.com) ou [VSCodium (sans télémétrie)](https://vscodium.com)
 
-### Installation automatique
+### Installation automatique (PROTOTYPE)
 Exécuté le scripts powershell ci-dessous pour une installation automatique (tester uniquement sous windows) :
 ```powershell
 &({
@@ -45,16 +45,18 @@ Exécuté le scripts powershell ci-dessous pour une installation automatique (te
 		echo 'Refusé l''installation automatique que si vous l''avez déjà !'
 		$q = Read-Host 'Voulez-vous installer Poetry (y/n default: y)'
 		if ($q.toUpper() -or !$q) {
-			(wget https://install.python-poetry.org).Content | py
+			(wget https://install.python-poetry.org).Content | python
 		}
+
 		$q = Read-Host 'Ajouter Poetry au PATH ? (y/n default: y)'
 		if ($q.toUpper() -or !$q) {
-			$x = [Environment]::GetEnvironmentVariable("path", 1)+"$env:appdata\Python\Scripts"
-			[Environment]::SetEnvironmentVariable("path", $x, 1)
+			$x = [Environment]::GetEnvironmentVariable("path", "User")+"$env:appdata\Python\Scripts;"
+			[Environment]::SetEnvironmentVariable("path", $x, "User")
 		}
 	})
 
-	cp example.config.ini config.ini
+	mkdir src/data/ -Force
+	cp example.config.ini src/data/config.ini
 	poetry install; poetry shell
 })
 ```
@@ -63,12 +65,27 @@ Exécuté le scripts powershell ci-dessous pour une installation automatique (te
 1) Cloner le projet : `git clone https://github.com/Felix-Ecole/TinyShare.git <install_path>`
 2) Ce rendre dans le projet : `cd <install_path>`
 3) Installer Poetry : [lien vers la documentation d'installation manuelle](https://python-poetry.org/docs/#installing-with-the-official-installer)
-4) Copier le fichier de configuration : `cp example.config.ini config.ini`
-4) Installe  l'environnement de développement : `poetry install`
-5) Activé l'environnement de développement : `poetry shell`
+4) Créer le dossier "data" : `mkdir src/data/ -Force`
+5) Copier le fichier de configuration : `cp example.config.ini src/data/config.ini`
+6) Installe  l'environnement de développement : `poetry install`
+7) Activé l'environnement de développement : `poetry shell`
 
 ### Configuration
-...
+La configuration se fait globalement automatiquement dès le premier lancement.
+Cependant, certain paramètre peuvent être défini :
+```ini
+[APPLICATION]
+chars = 0123456789ABCDEF ; Correspond aux caractères utilisables pour générer d'ID d'URL.
+key_n = 6 ; Correspond à la longueur fixe de l'ID d'URL de partage.
+split = 256 ; Correspond au nombre de groupe d'ID d'URL.
+stime = 8 ; Correspond au nombre d'heures avant expiration d'une session normale.
+ktime = 730 ; Correspond au nombre d'heures avant expiration d'une session rallongée.
+
+[GOD_LOGIN]
+mail = god@localhost # Correspond au mail du plus grand administrateur.
+user = god # Correspond au nom d'utilisateur du plus grand administrateur.
+pass = god # Correspond au mot de passe du plus grand administrateur (automatiquement hasher par sécurité).
+```
 
 
 

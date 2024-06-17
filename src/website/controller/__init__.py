@@ -9,10 +9,43 @@ from pathlib import Path
 import traceback
 from typing import Any
 
+from dotmap import DotMap
 from jinja2 import Environment, FileSystemLoader
 from jinja2.exceptions import TemplateError, TemplateNotFound
+from passlib.hash import pbkdf2_sha256
 from sanic import Request, response
 from sanic.log import logger
+
+from library.config import Config
+from library.pepper_pass import PepperPass
+# ----------------------------------------------------------------------------------------------------
+
+
+
+# ----------------------------------------------------------------------------------------------------
+# Système de récupérer et d'enregistrer la configuration de l'application.
+# ----------------------------------------------------------------------------------------------------
+class Conf:
+	def __init__(self, filename:str) -> None:
+		self._config = Config(Path.cwd().joinpath(f"src/data/{filename}"))
+		self.config = DotMap(self._config.to_dict())
+
+		# Si l'application n'a pas encore générer ses informations sécurité,
+		# Alors, génère les informations de sécurité et enregistre-les.
+		if not self.config.SECURITY.secret:
+			self.config.SECURITY.secret = PepperPass.Generator.pepper()
+			self.config.SECURITY.update(PepperPass().save_param())
+			self.update()
+
+		# Si le mot de passe n'est pas hasher, alors, hash-le par sécurité.
+		if not pbkdf2_sha256.identify(self.config.GOD_LOGIN["pass"]):
+			self.config.GOD_LOGIN["pass"] = pbkdf2_sha256.hash(self.config.GOD_LOGIN["pass"])
+
+	def update(self):
+		self._config.update(self.config); _ = self._config.save()
+
+# Récupère la configuration de l'application.
+conf = Conf("config.ini")
 # ----------------------------------------------------------------------------------------------------
 
 
@@ -101,7 +134,7 @@ async def error(request: Request, exception: Exception):
 		)
 	except TemplateError as e:
 		msg = f"jinja2.exceptions.{type(e).__name__}: Message: {Render.VUE_PATH.joinpath(str(e))}"
-		if type(e) == TemplateNotFound: msg=msg.replace("message", "File Not Found at")
+		if type(e) == TemplateNotFound: msg=msg.replace("Message", "File Not Found at")
 		error_print(e, msg)
 
 		with open(Render.VUE_PATH.joinpath("static/html/error/500.html"), "r", encoding="UTF8") as f:
