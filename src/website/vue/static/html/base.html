@@ -11,6 +11,10 @@
 	</head>
 	<body>
 		<header>
+			{% if not ctx.token %}
+			<a id="l_register" class="btn" href="{{ url_for('login' ) }}?inscription">Inscription</a>
+			<a id="l_login" class="btn" href="{{ url_for('login' ) }}">Connexion</a>
+			{% endif %}
 			{% block header %}{% endblock %}
 		</header>
 		<main>

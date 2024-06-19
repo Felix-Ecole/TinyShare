@@ -6,8 +6,9 @@
 {% endblock head %}
 
 {% block header %}
-	<a class="btn" href="{{ url_for('login' ) }}?inscription">Inscription</a>
-	<a class="btn" href="{{ url_for('login' ) }}">Connexion</a>
+	{% if ctx.token %}
+	<a class="btn" href="{{ url_for('client' ) }}">Espace utilisateur</a>
+	{% endif %}
 {% endblock %}
 
 {% block main %}

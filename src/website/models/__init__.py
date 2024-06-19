@@ -3,7 +3,7 @@ from tortoise import Model, fields as fs
 
 class Users(Model):
 	id = fs.IntField(primary_key=True)
-	pseudo = fs.CharField(64, db_index=True)
+	pseudo = fs.CharField(64, unique=True, db_index=True)
 	mail = fs.CharField(64, unique=True)
 	passwd = fs.CharField(90)
 	cr_date = fs.DatetimeField()
@@ -26,12 +26,12 @@ class Groups(Model):
 
 class Connections(Model):
 	id = fs.IntField(primary_key=True)
-	cnx_date = fs.DatetimeField()
-	dcx_date = fs.DatetimeField()
+	cnn_date = fs.DatetimeField()
+	dcn_date = fs.DatetimeField(null=True)
 	max_date = fs.DatetimeField()
 
-	fk_user: fs.ForeignKeyRelation[Users] = fs.ForeignKeyField("models.Users", "connections")
-	fk_group: fs.ForeignKeyNullableRelation[Groups] = fs.ForeignKeyField("models.Groups", "connections")
+	fk_user: fs.ForeignKeyRelation[Users]|None = fs.ForeignKeyField("models.Users", "connections")
+	fk_group: fs.ForeignKeyNullableRelation[Groups]|None = fs.ForeignKeyField("models.Groups", "connections", null=True)
 
 
 class Shared(Model):
