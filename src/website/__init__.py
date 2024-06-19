@@ -33,8 +33,9 @@ _ = [
 	URL.add_route(c.home, "/"),
 	URL.add_route(l.login, "/login", methods={"GET", "POST"}),
 
-	URL.add_route(p.admin, "/admin/"),
-	URL.add_route(p.client, "/panel/"),
+	URL.add_route(p.god, "/god/", ctx_group_lvl=99),
+	URL.add_route(p.admin, "/admin/", ctx_group_lvl=2),
+	URL.add_route(p.client, "/client/", ctx_group_lvl=1),
 
 	URL.add_route(s.shared, "/l/<ID:str>", name="link_shared", methods={"GET", "POST"}),
 	URL.add_route(s.shared, "/t/<ID:str>", name="text_shared", methods={"GET", "POST"}),
@@ -44,6 +45,7 @@ _ = [
 	URL.static("/static/", c.Render.VUE_PATH.joinpath("static")),
 	URL.static("/favicon.ico", c.Render.VUE_PATH.joinpath("static/img/favicon.ico"), name="favicon"),
 
+	URL.on_request(c.required_level),
 	ERROR.add(Exception, c.error),
 ]
 # ----------------------------------------------------------------------------------------------------

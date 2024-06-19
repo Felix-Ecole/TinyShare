@@ -5,6 +5,7 @@ Les petits scripts ce trouveront ici et les gros devront-être dans des modules 
 """
 
 # ----------------------------------------------------------------------------------------------------
+from datetime import datetime
 from pathlib import Path
 import traceback
 from typing import Any
@@ -15,9 +16,12 @@ from jinja2.exceptions import TemplateError, TemplateNotFound
 from passlib.hash import pbkdf2_sha256
 from sanic import Request, response
 from sanic.log import logger
+from tortoise import Tortoise, run_async
 
 from library.config import Config
 from library.pepper_pass import PepperPass
+
+from ..models import Users, Groups
 # ----------------------------------------------------------------------------------------------------
 
 
@@ -37,13 +41,41 @@ class Conf:
 			self.config.SECURITY.update(PepperPass().save_param())
 			self.update()
 
+		# Vérifie les informations de l'administrateur suprême.
+		run_async(self.god_identity())
+
+
+	async def god_identity(self):
 		# Si le mot de passe n'est pas hasher, alors, hash-le par sécurité.
 		if not pbkdf2_sha256.identify(self.config.GOD_LOGIN["pass"]):
-			self.config.GOD_LOGIN["pass"] = pbkdf2_sha256.hash(self.config.GOD_LOGIN["pass"])
-			self.update()
+			self.config.GOD_LOGIN["pass"] = pbkdf2_sha256.hash(
+				PepperPass(self.config.SECURITY).mixer(self.config.GOD_LOGIN["pass"])
+			)
+
+		# Établie une connexion avec la base de données.
+		db_url = f"sqlite:///{Path.cwd().joinpath('src/data/database.db').as_posix()}"
+		await Tortoise.init(db_url=db_url, modules={"models": ["website.models"]})
+		await Tortoise.generate_schemas()
+
+		# Défini les informations de l'administrateur suprême.
+		data = {
+			"pseudo": self.config.GOD_LOGIN.user, "mail": self.config.GOD_LOGIN.mail,
+			"passwd": self.config.GOD_LOGIN["pass"], "cr_date": datetime.now()
+		}
+
+		# Récupère ou créer l'administrateur suprême depuis la BDD.
+		god, created = await Users.get_or_create(id=-1, defaults=data)
+		await god.groups.add((await Groups.get_or_create(id=-1, name="GOD", level=99))[0])
+
+		# Si l'administrateur suprême n'a pas été créer, alors, met le à jour.
+		if not created: del data["cr_date"]; await god.update_from_dict(data).save()
+
+		self.update()
+
 
 	def update(self):
 		self._config.update(self.config); _ = self._config.save()
+
 
 # Récupère la configuration de l'application.
 conf = Conf("config.ini")
@@ -66,7 +98,7 @@ class Render:
 	)
 
 	@classmethod
-	def content(cls, template: str|Path, ctx: dict[str, Any] = {}, escape:bool = True):
+	def content(cls, template: str|Path, ctx: Request|dict[str, Any] = {}, escape:bool = True):
 		"""
 			Cette fonction permet de transformer un fichier template `Jinja2` (version 3.0.x) en code HTML.
 
@@ -91,7 +123,7 @@ class Render:
 		# dans le contexte avant de faire le rendu du template et d'enfin
 		# remettre l'état d'origine de l'échappement des caractères.
 		if not escape: cls.ENV.autoescape = False
-		HTML = data.render(({"ctx": ctx}))
+		HTML = data.render({"ctx": ctx.ctx if type(ctx) == Request else ctx})
 		if not escape: cls.ENV.autoescape = True
 
 
@@ -101,11 +133,26 @@ class Render:
 
 
 
+from .login import invalid_request
 # ----------------------------------------------------------------------------------------------------
 # Petite page qui n'on pas besoins d'une grosse préparation.
 # ----------------------------------------------------------------------------------------------------
 async def home(request: Request):
-	return response.html(Render.content(Path("index.html")))
+	return response.html(Render.content(Path("index.html"), request))
+
+
+async def required_level(request: Request):
+
+	# Récupère le "group_lvl" du routeur si existe sinon il vaudra 0.
+	lvl = getattr(request.route.ctx, "group_lvl", 0) if request.route else 0
+
+	# Déclare la valeur dans le contexte de la requête.
+	request.ctx.group_lvl = lvl
+
+	# Alors, test si la requête est illégitime au niveau des permissions.
+	test = await invalid_request(request.cookies, lvl)
+	if test[0]: return test[1] # Retourne une erreur si elle est bien illégitime sinon,
+	else: request.ctx.token = test[1] # Défini la valeur du token dans le contexte de la requête.
 # ----------------------------------------------------------------------------------------------------
 
 
