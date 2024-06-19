@@ -40,6 +40,7 @@ class Conf:
 		# Si le mot de passe n'est pas hasher, alors, hash-le par sécurité.
 		if not pbkdf2_sha256.identify(self.config.GOD_LOGIN["pass"]):
 			self.config.GOD_LOGIN["pass"] = pbkdf2_sha256.hash(self.config.GOD_LOGIN["pass"])
+			self.update()
 
 	def update(self):
 		self._config.update(self.config); _ = self._config.save()

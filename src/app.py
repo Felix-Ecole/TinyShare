@@ -1,6 +1,10 @@
 # ----------------------------------------------------------------------------------------------------
+from pathlib import Path
+
 from sanic import Sanic
 from sanic.http.constants import HTTP
+from tortoise import Tortoise, run_async
+from tortoise.contrib.sanic import register_tortoise
 
 from website import ERROR, URL
 from website.controller import Render
@@ -16,6 +20,11 @@ Render.ENV.globals["url_for"] = lambda x, **y: app.url_for(f"url.{x}", **y)
 Render.ENV.globals["routes"] = app.router.routes
 
 
+# Défini l'emplacement de la base de données et enregistre-la dans l'application Sanic pour l'exécution.
+db_url = f"sqlite:///{Path.cwd().joinpath('src/data/database.db').as_posix()}"
+register_tortoise(app, db_url=db_url, modules={"models": ["website.models"]}, generate_schemas=True)
+
+
 # Si le module est exécuté,
 if __name__ == "__main__":
 
@@ -23,35 +32,8 @@ if __name__ == "__main__":
 	app.prepare("localhost", 5000)
 	app.run(version=HTTP.VERSION_1, dev=False)
 
-
-
-
-
-
-
-
-
-
-# from tortoise.contrib.sanic import register_tortoise
-# 
-# register_tortoise(
-#     app, db_url="sqlite://test3.db", modules={"models": ["__main__"]}, generate_schemas=True
-# )
-
-
-# from tortoise import Model, fields
-# 
-# class Users(Model):
-# 	id = fields.IntField(primary_key=True)
-# 	name = fields.CharField(50)
-# 
-# 	def __str__(self):
-# 		return f"User {self.id}: {self.name}"
-
-
-
-
-
-# from dotmap import DotMap
-# config_ini = Config(os.path.realpath("src/config.ini"))
-# config = DotMap(config_ini.to_dict())
+	# Nettoyage de la DB un fois l'exécution terminé.
+	async def db_clean():
+		await Tortoise.init(db_url=db_url, modules={"models": ["website.models"]})
+		await Tortoise.generate_schemas()
+	run_async(db_clean())
