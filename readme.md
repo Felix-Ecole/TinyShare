@@ -82,8 +82,8 @@ stime = 8 ; Correspond au nombre d'heures avant expiration d'une session normale
 ktime = 730 ; Correspond au nombre d'heures avant expiration d'une session rallongée.
 
 [GOD_LOGIN]
-mail = god@localhost # Correspond au mail du plus grand administrateur.
 user = god # Correspond au nom d'utilisateur du plus grand administrateur.
+mail = god@localhost # Correspond au mail du plus grand administrateur.
 pass = god # Correspond au mot de passe du plus grand administrateur (automatiquement hasher par sécurité).
 ```
 
