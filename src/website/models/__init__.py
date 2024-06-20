@@ -41,4 +41,4 @@ class Shared(Model):
 	data = fs.TextField()
 	cr_date = fs.DatetimeField()
 
-	fk_user = fs.ForeignKeyField("models.Users", "shares")
+	fk_user = fs.ForeignKeyField("models.Users", "shares", null=True)
