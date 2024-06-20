@@ -1,4 +1,5 @@
 from tortoise import Model, fields as fs
+from .shared_id import *
 
 
 class Users(Model):
@@ -35,7 +36,7 @@ class Connections(Model):
 
 
 class Shared(Model):
-	id = fs.IntField(primary_key=True)
+	id = fs.CharField(6, primary_key=True)
 	type = fs.CharField(16)
 	data = fs.TextField()
 	cr_date = fs.DatetimeField()

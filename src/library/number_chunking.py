@@ -5,7 +5,7 @@
 # Dépôt : ...
 # ----------------------------------------------------------------------------------------------------
 # Créer le : 17/06/2024
-# Dernière modification le : 17/06/2024
+# Dernière modification le : 18/06/2024
 # ----------------------------------------------------------------------------------------------------
 # Licence : MPL-2.0 (Mozilla Public License 2.0)
 # ----------------------------------------------------------------------------------------------------
@@ -39,7 +39,7 @@ class Chunking:
 		'Permet de générer une liste de "range" qui représente le nombre de possibilité totale.'
 
 		# Génère des "range" du nombre de possibilité réparti de manière uniformément.
-		x: list[range] = []; c_num = self.p_pos / self.c_pos
+		x: list[range] = []; c_num = int(self.p_pos / self.c_pos)
 		for i in range(c_num): x.append(range(i, self.p_pos, c_num))
 
 		# Retourne le résultat.

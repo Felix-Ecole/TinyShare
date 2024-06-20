@@ -17,11 +17,14 @@ from passlib.hash import pbkdf2_sha256
 from sanic import Request, response
 from sanic.log import logger
 from tortoise import Tortoise, run_async
+from tortoise.contrib.sqlite.functions import Random as SQLRandom
 
+from library.base_converter import BaseConverter
 from library.config import Config
+from library.number_chunking import Chunking
 from library.pepper_pass import PepperPass
 
-from ..models import Users, Groups
+from ..models import Groups, Shared_ID, Users
 # ----------------------------------------------------------------------------------------------------
 
 
@@ -43,6 +46,9 @@ class Conf:
 
 		# Vérifie les informations de l'administrateur suprême.
 		run_async(self.god_identity())
+
+		# Vérifie/Initialise les identifiants des liens disponibles.
+		run_async(self.shared_init())
 
 
 	async def god_identity(self):
@@ -71,6 +77,26 @@ class Conf:
 		if not created: del data["cr_date"]; await god.update_from_dict(data).save()
 
 		self.update()
+
+
+	async def shared_init(self):
+
+		# Établie une connexion avec la base de données.
+		db_url = f"sqlite:///{Path.cwd().joinpath('src/data/database.db').as_posix()}"
+		await Tortoise.init(db_url=db_url, modules={"models": ["website.models"]})
+		await Tortoise.generate_schemas()
+
+		# Récupère ou créer la clé d'information sur l'état d'usure des liens disponible.
+		_, created = await Shared_ID.get_or_create(id=-1, defaults={"data": "0"})
+		
+		# Si on viens de la créer,
+		if created:
+
+			# Alors, génère les 16^4 première possibilité sur 16^6.
+			c = BaseConverter(self.config.APPLICATION.chars)
+			print(Chunking(chunk_size=int(3)).generate())
+			for key in Chunking(chunk_size=int(3)).generate()[0]:
+				_ = await Shared_ID.create(data=c.encode(key).rjust(6, "0"))
 
 
 	def update(self):
@@ -133,11 +159,19 @@ class Render:
 
 
 
-from .login import invalid_request
+# ----------------------------------------------------------------------------------------------------
+from .login import invalid_request # "invalid_request" import
 # ----------------------------------------------------------------------------------------------------
 # Petite page qui n'on pas besoins d'une grosse préparation.
 # ----------------------------------------------------------------------------------------------------
 async def home(request: Request):
+	# Récupère une url de libre aléatoirement depuis la base de données.
+	x = await Shared_ID.annotate(order=SQLRandom()).order_by('order').limit(1)
+
+	# Rajoute cette information dans le contexte.
+	request.ctx.shared_id = x[0]
+
+	# Retourne la page une fois le rendu d'effectuer.
 	return response.html(Render.content(Path("index.html"), request))
 
 
