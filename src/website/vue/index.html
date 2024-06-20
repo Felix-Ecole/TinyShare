@@ -3,6 +3,8 @@
 {% block title %}Accueil{% endblock title %}
 
 {% block head %}
+	<link rel="stylesheet" href="/static/css/index.css">
+	<style>main { background-color: #{{ ctx.shared_id.data }}; }</style>
 {% endblock head %}
 
 {% block header %}
@@ -12,7 +14,19 @@
 {% endblock %}
 
 {% block main %}
-	{% for val in routes %}
-	<a class="btn" href="{{ val.path }}">{{ val.name.split('.')[2] }}</a>
-	{% endfor %}
+	<section>
+		<h3>TinyShare - Partager facilement :D</h3>
+		<form action="{{ url_for('link_shared', ID=ctx.shared_id.id) }}" method="post">
+			<div><input type="url" name="link" required placeholder="Votre URL"><button>GO</button></div>
+		</form>
+		<div>
+			<button disabled>GO TEXTE</button>
+			<button disabled>GO IMAGE</button>
+			<button disabled>GO FICHIER</button>
+			<button disabled>Afficher/Masquer les options</button>
+		</div>
+	</section>
+	
+	
+	{# 	{% for val in routes %}<a class="btn" href="{{ val.path }}">{{ val.name.split('.')[2] }}</a>{% endfor %} #}
 {% endblock %}

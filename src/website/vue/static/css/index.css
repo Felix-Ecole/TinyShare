@@ -1,0 +1,18 @@
+section {
+	height: 350px; width: 700px; margin: auto; padding: 30px;
+	border: 1px solid #C9CBCF; border-radius: 0.5rem;
+	text-align: center; background-color: white;
+}
+
+section > h3 { margin-bottom: 40px; border-radius: 50px; line-height: 1.5em; }
+section > div button:not(:last-child) { margin-right: 10px; }
+section > div button:last-child { margin-right: 0; }
+
+section, form { display: flex; flex-direction: column; justify-content: center; }
+
+form input { height: 34px; margin-top: 1px; padding: 0 8px; }
+
+
+form > div input { flex: 1; } form > div button { cursor: pointer; }
+form > div { height: 40px; display: flex; margin-bottom: 20px; }
+form > div input:not(:last-child) { margin-right: 10px; }

@@ -14,6 +14,7 @@ a { display: inline-block; }
 
 button:hover, .btn:hover { background-color: #F2F2F3; }
 button:active, .btn:active { background-color: #E4E5E7; }
+button:disabled, .btn:disabled { background-color: #E4E5E7; cursor:no-drop; }
 button, .btn {
 	border: 1px solid #C9CBCF; border-radius: 0.5rem;
 	text-decoration: none; padding: 5px 10px;
@@ -29,5 +30,6 @@ header {
 header a { margin-right: 20px; }
 
 main {
+	display: flex; flex-direction: column;
 	height: calc(100vh - 76px);
 }
